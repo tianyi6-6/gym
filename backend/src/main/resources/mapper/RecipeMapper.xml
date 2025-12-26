@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.RecipeMapper">
+    <select id="findAll" resultType="com.gym.entity.Recipe">
+        SELECT * FROM recipe ORDER BY create_time DESC
+    </select>
+    <select id="findById" resultType="com.gym.entity.Recipe">
+        SELECT * FROM recipe WHERE id = #{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO recipe (title, content, image, category, status)
+        VALUES (#{title}, #{content}, #{image}, #{category}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE recipe
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM recipe WHERE id = #{id}
+    </delete>
+</mapper>
+

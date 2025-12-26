@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachMapper">
+    <select id="findByUsername" resultType="com.gym.entity.Coach">
+        SELECT * FROM coach WHERE username = #{username}
+    </select>
+    <select id="findById" resultType="com.gym.entity.Coach">
+        SELECT * FROM coach WHERE id = #{id}
+    </select>
+    <select id="findAll" resultType="com.gym.entity.Coach">
+        SELECT * FROM coach ORDER BY create_time DESC
+    </select>
+    <insert id="insert">
+        INSERT INTO coach (username, password, name, phone, email, avatar, specialty, experience, status)
+        VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{specialty}, #{experience}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE coach
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="specialty != null">specialty = #{specialty},</if>
+            <if test="experience != null">experience = #{experience},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="password != null">password = #{password},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach WHERE id = #{id}
+    </delete>
+</mapper>
+

@@ -11,6 +11,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/register',
+    name: 'Register',
+    component: () => import('@/views/Register.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/',
     redirect: '/admin',
     component: () => import('@/layouts/MainLayout.vue'),
@@ -91,15 +97,21 @@ const routes = [
         meta: { role: 'coach' }
       },
       {
-        path: '/coach/appointment',
-        name: 'CoachAppointment',
-        component: () => import('@/views/coach/Appointment.vue'),
+        path: '/coach/course-schedule',
+        name: 'CoachCourseSchedule',
+        component: () => import('@/views/coach/CourseSchedule.vue'),
         meta: { role: 'coach' }
       },
       {
-        path: '/coach/experience',
-        name: 'CoachExperience',
-        component: () => import('@/views/coach/Experience.vue'),
+        path: '/coach/my-courses',
+        name: 'CoachMyCourses',
+        component: () => import('@/views/coach/MyCourses.vue'),
+        meta: { role: 'coach' }
+      },
+      {
+        path: '/coach/health-fitness',
+        name: 'CoachHealthFitness',
+        component: () => import('@/views/coach/HealthFitness.vue'),
         meta: { role: 'coach' }
       },
       // 用户路由

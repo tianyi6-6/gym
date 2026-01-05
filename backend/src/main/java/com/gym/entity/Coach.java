@@ -14,6 +14,11 @@ public class Coach {
     private String avatar;
     private String specialty;
     private String experience;
+    private Integer professionalScore;
+    private Integer teachingScore;
+    private Integer communicationScore;
+    private Integer serviceScore;
+    private Integer performanceScore;
     private Integer status;
     private Date createTime;
     private Date updateTime;

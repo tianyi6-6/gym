@@ -15,6 +15,11 @@ public class CoachController {
     @Autowired
     private CoachService coachService;
 
+    @PostMapping("/register")
+    public Result<Void> register(@RequestBody Coach coach) {
+        return coachService.register(coach);
+    }
+
     @GetMapping("/list")
     public Result<List<Coach>> list() {
         return coachService.findAll();

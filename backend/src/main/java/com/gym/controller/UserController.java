@@ -15,6 +15,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/register")
+    public Result<Void> register(@RequestBody User user) {
+        return userService.register(user);
+    }
+
     @GetMapping("/list")
     public Result<List<User>> list() {
         return userService.findAll();

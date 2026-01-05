@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachCourseScheduleMapper">
+    <resultMap id="CoachCourseScheduleResultMap" type="com.gym.entity.CoachCourseSchedule">
+        <id property="id" column="id"/>
+        <result property="coachId" column="coach_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="courseName" column="course_name"/>
+        <result property="scheduleDate" column="schedule_date"/>
+        <result property="startTime" column="start_time" typeHandler="com.gym.handler.StringTimeTypeHandler"/>
+        <result property="endTime" column="end_time" typeHandler="com.gym.handler.StringTimeTypeHandler"/>
+        <result property="location" column="location"/>
+        <result property="maxStudents" column="max_students"/>
+        <result property="currentStudents" column="current_students"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="coachName" column="coach_name"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="CoachCourseScheduleResultMap">
+        SELECT ccs.*, co.name as coach_name
+        FROM coach_course_schedule ccs
+        LEFT JOIN coach co ON ccs.coach_id = co.id
+        ORDER BY ccs.schedule_date ASC, ccs.start_time ASC
+    </select>
+    <select id="findByCoachId" resultMap="CoachCourseScheduleResultMap">
+        SELECT ccs.*, co.name as coach_name
+        FROM coach_course_schedule ccs
+        LEFT JOIN coach co ON ccs.coach_id = co.id
+        WHERE ccs.coach_id = #{coachId}
+        ORDER BY ccs.schedule_date ASC, ccs.start_time ASC
+    </select>
+    <select id="findById" resultMap="CoachCourseScheduleResultMap">
+        SELECT ccs.*, co.name as coach_name
+        FROM coach_course_schedule ccs
+        LEFT JOIN coach co ON ccs.coach_id = co.id
+        WHERE ccs.id = #{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO coach_course_schedule (coach_id, course_id, course_name, schedule_date, start_time, end_time, location, max_students, current_students, status)
+        VALUES (#{coachId}, #{courseId}, #{courseName}, #{scheduleDate}, #{startTime, typeHandler=com.gym.handler.StringTimeTypeHandler}, #{endTime, typeHandler=com.gym.handler.StringTimeTypeHandler}, #{location}, #{maxStudents}, #{currentStudents}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE coach_course_schedule
+        <set>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="courseName != null">course_name = #{courseName},</if>
+            <if test="scheduleDate != null">schedule_date = #{scheduleDate},</if>
+            <if test="startTime != null">start_time = #{startTime, typeHandler=com.gym.handler.StringTimeTypeHandler},</if>
+            <if test="endTime != null">end_time = #{endTime, typeHandler=com.gym.handler.StringTimeTypeHandler},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="maxStudents != null">max_students = #{maxStudents},</if>
+            <if test="currentStudents != null">current_students = #{currentStudents},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach_course_schedule WHERE id = #{id}
+    </delete>
+    <delete id="deleteByCoachId">
+        DELETE FROM coach_course_schedule WHERE coach_id = #{coachId}
+    </delete>
+</mapper>

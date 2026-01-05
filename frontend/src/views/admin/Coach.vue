@@ -105,6 +105,7 @@ export default {
       this.coachForm = {
         id: null,
         username: '',
+        password: '',
         name: '',
         phone: '',
         specialty: '',

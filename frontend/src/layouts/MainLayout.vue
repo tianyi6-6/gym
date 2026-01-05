@@ -70,13 +70,17 @@
               <i class="el-icon-s-home"></i>
               <span>首页</span>
             </el-menu-item>
-            <el-menu-item index="/coach/appointment">
+            <el-menu-item index="/coach/course-schedule">
               <i class="el-icon-date"></i>
-              <span>我的预约</span>
+              <span>课程安排</span>
             </el-menu-item>
-            <el-menu-item index="/coach/experience">
-              <i class="el-icon-document"></i>
-              <span>我的经验</span>
+            <el-menu-item index="/coach/my-courses">
+              <i class="el-icon-s-goods"></i>
+              <span>我的授课</span>
+            </el-menu-item>
+            <el-menu-item index="/coach/health-fitness">
+              <i class="el-icon-s-custom"></i>
+              <span>健康体能</span>
             </el-menu-item>
           </template>
           
@@ -177,6 +181,19 @@ export default {
 .main {
   background: #f5f5f5;
   padding: 20px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+}
+
+.el-main {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
 }
 </style>
 

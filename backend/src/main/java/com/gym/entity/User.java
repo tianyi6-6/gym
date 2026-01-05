@@ -14,6 +14,7 @@ public class User {
     private String email;
     private String avatar;
     private BigDecimal balance;
+    private String memberLevel;
     private Integer status;
     private Date createTime;
     private Date updateTime;

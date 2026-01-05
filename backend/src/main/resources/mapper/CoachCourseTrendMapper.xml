@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachCourseTrendMapper">
+    <select id="findByCoachId" resultType="com.gym.entity.CoachCourseTrend">
+        SELECT * FROM coach_course_trend WHERE coach_id = #{coachId} ORDER BY year, month
+    </select>
+    <select id="findByCoachIdAndMonths" resultType="com.gym.entity.CoachCourseTrend">
+        SELECT * FROM coach_course_trend 
+        WHERE coach_id = #{coachId} 
+        ORDER BY year DESC, month DESC 
+        LIMIT #{months}
+    </select>
+    <select id="findByCoachIdAndYearMonth" resultType="com.gym.entity.CoachCourseTrend">
+        SELECT * FROM coach_course_trend 
+        WHERE coach_id = #{coachId} AND year = #{year} AND month = #{month}
+    </select>
+    <insert id="insert">
+        INSERT INTO coach_course_trend (coach_id, year, month, course_count, student_count, revenue)
+        VALUES (#{coachId}, #{year}, #{month}, #{courseCount}, #{studentCount}, #{revenue})
+    </insert>
+    <update id="update">
+        UPDATE coach_course_trend
+        <set>
+            <if test="courseCount != null">course_count = #{courseCount},</if>
+            <if test="studentCount != null">student_count = #{studentCount},</if>
+            <if test="revenue != null">revenue = #{revenue},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach_course_trend WHERE id = #{id}
+    </delete>
+</mapper>

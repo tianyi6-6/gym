@@ -19,6 +19,9 @@
         <el-form-item>
           <el-button type="primary" style="width: 100%" @click="handleLogin" :loading="loading">登录</el-button>
         </el-form-item>
+        <div class="register-link">
+          还没有账号？<el-link type="primary" @click="goToRegister">去注册</el-link>
+        </div>
       </el-form>
       <div class="tips">
         <p>测试账号：</p>
@@ -71,6 +74,8 @@ export default {
             const targetPath = res.data.role === 'admin' ? '/admin' : 
                              res.data.role === 'coach' ? '/coach' : '/user'
             
+            this.loading = false
+            
             setTimeout(() => {
               this.$router.push(targetPath).catch(err => {
                 if (err.name !== 'NavigationDuplicated') {
@@ -84,6 +89,9 @@ export default {
           })
         }
       })
+    },
+    goToRegister() {
+      this.$router.push('/register')
     }
   }
 }
@@ -131,6 +139,13 @@ export default {
 
 .tips p {
   margin: 5px 0;
+}
+
+.register-link {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #606266;
 }
 </style>
 

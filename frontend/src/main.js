@@ -11,10 +11,11 @@ Vue.use(ElementUI)
 
 axios.defaults.baseURL = '/api'
 axios.defaults.timeout = 10000
+axios.defaults.headers.common['Content-Type'] = 'application/json;charset=UTF-8'
 
 axios.interceptors.request.use(
   config => {
-    const role = store.state.userInfo?.role
+    const role = store.state.userInfo && store.state.userInfo.role
     if (role) {
       config.headers['X-Role'] = role
     }
@@ -49,7 +50,7 @@ axios.interceptors.response.use(
   }
 )
 
-Vue.prototype.$http = axios
+Vue.prototype.$axios = axios
 
 new Vue({
   router,

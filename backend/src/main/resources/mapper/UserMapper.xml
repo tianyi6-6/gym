@@ -11,8 +11,8 @@
         SELECT * FROM user ORDER BY create_time DESC
     </select>
     <insert id="insert">
-        INSERT INTO user (username, password, name, phone, email, avatar, balance, status)
-        VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{balance}, #{status})
+        INSERT INTO user (username, password, name, phone, email, avatar, balance, member_level, status)
+        VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{balance}, #{memberLevel}, #{status})
     </insert>
     <update id="update">
         UPDATE user

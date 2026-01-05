@@ -11,8 +11,8 @@
         SELECT * FROM coach ORDER BY create_time DESC
     </select>
     <insert id="insert">
-        INSERT INTO coach (username, password, name, phone, email, avatar, specialty, experience, status)
-        VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{specialty}, #{experience}, #{status})
+        INSERT INTO coach (username, password, name, phone, email, avatar, specialty, experience, professional_score, teaching_score, communication_score, service_score, performance_score, status)
+        VALUES (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{specialty}, #{experience}, #{professionalScore}, #{teachingScore}, #{communicationScore}, #{serviceScore}, #{performanceScore}, #{status})
     </insert>
     <update id="update">
         UPDATE coach

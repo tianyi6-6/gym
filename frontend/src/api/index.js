@@ -35,6 +35,10 @@ export const deleteCoach = (id) => {
   return axios.delete(`/coach/${id}`)
 }
 
+export const registerCoach = (data) => {
+  return axios.post('/coach/register', data)
+}
+
 // 用户相关
 export const getUserList = () => {
   return axios.get('/user/list')
@@ -46,6 +50,10 @@ export const saveUser = (data) => {
 
 export const deleteUser = (id) => {
   return axios.delete(`/user/${id}`)
+}
+
+export const registerUser = (data) => {
+  return axios.post('/user/register', data)
 }
 
 // 订单相关
@@ -312,5 +320,42 @@ export const deleteHealthRiskWarning = (id) => {
 
 export const deleteHealthRiskWarningByUserId = (userId) => {
   return axios.delete(`/health-risk-warning/user/${userId}`)
+}
+
+// Dashboard相关
+export const getDashboardStats = () => {
+  return axios.get('/dashboard/stats')
+}
+
+export const getCourseSalesData = (days) => {
+  return axios.get('/dashboard/course-sales', {
+    params: { days }
+  })
+}
+
+export const getMemberGrowthData = (days) => {
+  return axios.get('/dashboard/member-growth', {
+    params: { days }
+  })
+}
+
+export const getMemberLevelDistribution = () => {
+  return axios.get('/dashboard/member-level-distribution')
+}
+
+export const getCourseTypeDistribution = () => {
+  return axios.get('/dashboard/course-type-distribution')
+}
+
+export const getCoachRadarData = () => {
+  return axios.get('/dashboard/coach-radar')
+}
+
+export const getUserStats = (userId) => {
+  return axios.get(`/dashboard/user-stats/${userId}`)
+}
+
+export const getCoachStats = (coachId) => {
+  return axios.get(`/dashboard/coach-stats/${coachId}`)
 }
 

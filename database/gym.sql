@@ -198,7 +198,7 @@ INSERT INTO `admin` (`username`, `password`, `name`, `phone`)
 VALUES (
     'admin',
     '123456',
-    '管理员',
+    'admin',
     '13800138000'
   );
 -- 教练

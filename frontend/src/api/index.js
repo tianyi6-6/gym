@@ -10,6 +10,14 @@ export const getCourseList = () => {
   return axios.get('/course/list')
 }
 
+export const getCoursePage = (page, size) => {
+  return axios.get(`/course/page?page=${page}&size=${size}`)
+}
+
+export const getCourseCount = () => {
+  return axios.get('/course/count')
+}
+
 export const getCourseById = (id) => {
   return axios.get(`/course/${id}`)
 }
@@ -42,6 +50,10 @@ export const registerCoach = (data) => {
 // 用户相关
 export const getUserList = () => {
   return axios.get('/user/list')
+}
+
+export const getUserById = (id) => {
+  return axios.get(`/user/${id}`)
 }
 
 export const saveUser = (data) => {
@@ -200,12 +212,6 @@ export const getLatestBodyAssessmentByUserId = (userId) => {
   return axios.get(`/body-assessment/user/${userId}/latest`)
 }
 
-export const getBodyAssessmentByDateRange = (userId, startDate, endDate) => {
-  return axios.get(`/body-assessment/user/${userId}/date-range`, {
-    params: { startDate, endDate }
-  })
-}
-
 export const getBodyAssessmentByCoachId = (coachId) => {
   return axios.get(`/body-assessment/coach/${coachId}`)
 }
@@ -233,10 +239,6 @@ export const getHealthGoalById = (id) => {
 
 export const getHealthGoalByUserId = (userId) => {
   return axios.get(`/health-goal/user/${userId}`)
-}
-
-export const getHealthGoalByStatus = (status) => {
-  return axios.get(`/health-goal/status/${status}`)
 }
 
 export const getHealthGoalByUserIdAndStatus = (userId, status) => {
@@ -286,12 +288,6 @@ export const getHealthRiskWarningByUserIdAndStatus = (userId, status) => {
 
 export const getHealthRiskWarningByStatus = (status) => {
   return axios.get(`/health-risk-warning/status/${status}`)
-}
-
-export const getHealthRiskWarningByDateRange = (startDate, endDate) => {
-  return axios.get('/health-risk-warning/date-range', {
-    params: { startDate, endDate }
-  })
 }
 
 export const getHealthRiskWarningList = () => {

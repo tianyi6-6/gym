@@ -10,10 +10,20 @@
         <el-table-column prop="id" label="ID" width="80" sortable :sort-orders="['ascending', 'descending']" :default-sort="{prop: 'id', order: 'ascending'}"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column label="密码" width="120">
+          <template slot-scope="scope">
+            <span>••••••</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="phone" label="手机号"></el-table-column>
         <el-table-column prop="balance" label="余额" width="120">
           <template slot-scope="scope">
             ¥{{ scope.row.balance }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="memberLevel" label="会员等级" width="120">
+          <template slot-scope="scope">
+            {{ scope.row.memberLevel || '普通会员' }}
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -48,13 +58,21 @@
           <el-input v-model="userForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="余额" prop="balance">
-          <el-input-number v-model="userForm.balance" :min="0" :precision="2" :step="100" style="width: 100%"></el-input-number>
+          <el-input-number v-model="userForm.balance" :min="0" :max="99999999.99" :precision="2" :step="100" style="width: 100%"></el-input-number>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="userForm.status">
             <el-radio :label="1">正常</el-radio>
             <el-radio :label="0">禁用</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="会员等级" prop="memberLevel">
+          <el-select v-model="userForm.memberLevel" placeholder="请选择会员等级" style="width: 100%">
+            <el-option label="普通会员" value="普通会员"></el-option>
+            <el-option label="银卡会员" value="银卡会员"></el-option>
+            <el-option label="金卡会员" value="金卡会员"></el-option>
+            <el-option label="钻石会员" value="钻石会员"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -82,12 +100,17 @@ export default {
         name: '',
         phone: '',
         balance: 0,
-        status: 1
+        status: 1,
+        memberLevel: '普通会员'
       },
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的11位手机号码', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -105,10 +128,12 @@ export default {
       this.userForm = {
         id: null,
         username: '',
+        password: '',
         name: '',
         phone: '',
         balance: 0,
-        status: 1
+        status: 1,
+        memberLevel: '普通会员'
       }
       this.dialogVisible = true
     },

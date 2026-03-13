@@ -23,12 +23,19 @@ public class CoachService {
     if (coach.getName() == null || coach.getName().isEmpty()) {
       return Result.error("姓名不能为空");
     }
-    
+
     Coach existingCoach = coachMapper.findByUsername(coach.getUsername());
     if (existingCoach != null) {
       return Result.error("用户名已存在");
     }
-    
+
+    if (coach.getPhone() != null && !coach.getPhone().isEmpty()) {
+      Coach existingPhoneCoach = coachMapper.findByPhone(coach.getPhone());
+      if (existingPhoneCoach != null) {
+        return Result.error("手机号已被注册");
+      }
+    }
+
     if (coach.getProfessionalScore() == null) {
       coach.setProfessionalScore(80);
     }
@@ -44,7 +51,8 @@ public class CoachService {
     if (coach.getPerformanceScore() == null) {
       coach.setPerformanceScore(80);
     }
-    
+
+    // 使用明文密码存储
     coachMapper.insert(coach);
     return Result.success(null);
   }

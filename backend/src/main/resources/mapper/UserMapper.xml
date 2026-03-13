@@ -4,6 +4,9 @@
     <select id="findByUsername" resultType="com.gym.entity.User">
         SELECT * FROM user WHERE username = #{username}
     </select>
+    <select id="findByPhone" resultType="com.gym.entity.User">
+        SELECT * FROM user WHERE phone = #{phone}
+    </select>
     <select id="findById" resultType="com.gym.entity.User">
         SELECT * FROM user WHERE id = #{id}
     </select>
@@ -21,6 +24,8 @@
             <if test="phone != null">phone = #{phone},</if>
             <if test="email != null">email = #{email},</if>
             <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="memberLevel != null">member_level = #{memberLevel},</if>
             <if test="status != null">status = #{status},</if>
             <if test="password != null">password = #{password},</if>
         </set>

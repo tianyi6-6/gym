@@ -6,6 +6,36 @@
         <el-button type="primary" @click="handleAdd">新增课程</el-button>
       </div>
       
+      <!-- 课程数据图表 -->
+      <el-row :gutter="20" style="margin-bottom: 20px">
+        <el-col :span="12">
+          <el-card>
+            <div slot="header">
+              <span>课程价格分布</span>
+            </div>
+            <BarChart 
+              :chart-data="priceChartData" 
+              :show-data-label="true"
+              height="300px"
+              @chart-click="handleChartClick"
+            />
+          </el-card>
+        </el-col>
+        <el-col :span="12">
+          <el-card>
+            <div slot="header">
+              <span>课程时长分布</span>
+            </div>
+            <BarChart 
+              :chart-data="durationChartData" 
+              :show-data-label="true"
+              height="300px"
+              @chart-click="handleChartClick"
+            />
+          </el-card>
+        </el-col>
+      </el-row>
+      
       <el-table :data="courseList" border>
         <el-table-column prop="id" label="ID" width="80" sortable :sort-orders="['ascending', 'descending']" :default-sort="{prop: 'id', order: 'ascending'}"></el-table-column>
         <el-table-column prop="name" label="课程名称"></el-table-column>
@@ -63,6 +93,25 @@
             <el-radio :label="0">下架</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="课程图片">
+          <el-upload
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :on-change="handleImageChange"
+            :before-upload="beforeUpload"
+            accept=".jpg,.jpeg,.png,.gif"
+          >
+            <img v-if="courseForm.image" :src="courseForm.image" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <div v-if="imagePreview" class="image-preview">
+            <h4>图片预览</h4>
+            <img :src="imagePreview" class="preview-image">
+            <el-button type="primary" size="small" @click="confirmImage">确认使用</el-button>
+            <el-button size="small" @click="cancelImage">取消</el-button>
+          </div>
+        </el-form-item>
       </el-form>
       <div slot="footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -74,9 +123,13 @@
 
 <script>
 import { getCourseList, saveCourse, deleteCourse, getCoachList } from '@/api'
+import BarChart from '@/components/BarChart.vue'
 
 export default {
   name: 'AdminCourse',
+  components: {
+    BarChart
+  },
   data() {
     return {
       courseList: [],
@@ -90,12 +143,22 @@ export default {
         price: 0,
         duration: 60,
         description: '',
-        status: 1
+        status: 1,
+        image: ''
       },
+      imagePreview: '',
       rules: {
         name: [{ required: true, message: '请输入课程名称', trigger: 'blur' }],
         coachId: [{ required: true, message: '请选择教练', trigger: 'change' }],
         price: [{ required: true, message: '请输入价格', trigger: 'blur' }]
+      },
+      priceChartData: {
+        xAxis: [],
+        series: []
+      },
+      durationChartData: {
+        xAxis: [],
+        series: []
       }
     }
   },
@@ -107,6 +170,7 @@ export default {
     loadCourseList() {
       getCourseList().then(res => {
         this.courseList = res.data.sort((a, b) => a.id - b.id)
+        this.updateCharts()
       })
     },
     loadCoachList() {
@@ -123,9 +187,58 @@ export default {
         price: 0,
         duration: 60,
         description: '',
-        status: 1
+        status: 1,
+        image: ''
       }
+      this.imagePreview = ''
       this.dialogVisible = true
+    },
+    beforeUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isGIF = file.type === 'image/gif'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG && !isPNG && !isGIF) {
+        this.$message.error('只能上传 JPG、PNG 或 GIF 格式的图片!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('图片大小不能超过 2MB!')
+        return false
+      }
+
+      // 验证图片尺寸
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = (e) => {
+        const img = new Image()
+        img.src = e.target.result
+        img.onload = () => {
+          const { width, height } = img
+          if (width < 300 || height < 200) {
+            this.$message.error('图片尺寸不能小于 300x200 像素!')
+            return false
+          }
+        }
+      }
+
+      return true
+    },
+    handleImageChange(file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.raw)
+      reader.onload = (e) => {
+        this.imagePreview = e.target.result
+      }
+    },
+    confirmImage() {
+      this.courseForm.image = this.imagePreview
+      this.imagePreview = ''
+      this.$message.success('图片添加成功')
+    },
+    cancelImage() {
+      this.imagePreview = ''
     },
     handleEdit(row) {
       this.dialogTitle = '编辑课程'
@@ -152,6 +265,85 @@ export default {
           this.loadCourseList()
         })
       })
+    },
+    updateCharts() {
+      this.updatePriceChart()
+      this.updateDurationChart()
+    },
+    updatePriceChart() {
+      // 按价格区间分组
+      const priceRanges = {
+        '0-100': 0,
+        '101-200': 0,
+        '201-300': 0,
+        '301-400': 0,
+        '400+': 0
+      }
+      
+      this.courseList.forEach(course => {
+        const price = course.price
+        if (price <= 100) {
+          priceRanges['0-100']++
+        } else if (price <= 200) {
+          priceRanges['101-200']++
+        } else if (price <= 300) {
+          priceRanges['201-300']++
+        } else if (price <= 400) {
+          priceRanges['301-400']++
+        } else {
+          priceRanges['400+']++
+        }
+      })
+      
+      this.priceChartData = {
+        xAxis: Object.keys(priceRanges),
+        series: [{
+          name: '课程数量',
+          data: Object.values(priceRanges),
+          color: '#409EFF'
+        }]
+      }
+    },
+    updateDurationChart() {
+      // 按时长区间分组
+      const durationRanges = {
+        '30分钟以下': 0,
+        '30-60分钟': 0,
+        '61-90分钟': 0,
+        '90分钟以上': 0
+      }
+      
+      this.courseList.forEach(course => {
+        const duration = course.duration
+        if (duration < 30) {
+          durationRanges['30分钟以下']++
+        } else if (duration <= 60) {
+          durationRanges['30-60分钟']++
+        } else if (duration <= 90) {
+          durationRanges['61-90分钟']++
+        } else {
+          durationRanges['90分钟以上']++
+        }
+      })
+      
+      this.durationChartData = {
+        xAxis: Object.keys(durationRanges),
+        series: [{
+          name: '课程数量',
+          data: Object.values(durationRanges),
+          color: '#67C23A'
+        }]
+      }
+    },
+    handleChartClick(params) {
+      const category = params.name
+      const count = params.value
+      
+      this.$message({
+        message: `类别: ${category}, 数量: ${count}`,
+        type: 'info',
+        duration: 2000
+      })
     }
   }
 }
@@ -166,6 +358,60 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.avatar-uploader {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .3s;
+  width: 150px;
+  height: 150px;
+}
+
+.avatar-uploader:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 150px;
+  height: 150px;
+  line-height: 150px;
+  text-align: center;
+}
+
+.avatar {
+  width: 150px;
+  height: 150px;
+  display: block;
+}
+
+.image-preview {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  background-color: #f5f7fa;
+}
+
+.image-preview h4 {
+  margin-bottom: 10px;
+  color: #303133;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.image-preview .el-button {
+  margin-right: 10px;
 }
 </style>
 

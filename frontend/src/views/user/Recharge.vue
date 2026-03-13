@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import { recharge, getRechargeList } from '@/api'
-import { mapState } from 'vuex'
+import { recharge, getRechargeList, getUserById } from '@/api'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
   name: 'UserRecharge',
@@ -44,7 +44,12 @@ export default {
         amount: 100
       },
       rules: {
-        amount: [{ required: true, message: '请输入充值金额', trigger: 'blur' }]
+        amount: [
+          { required: true, message: '请输入充值金额', trigger: 'blur' },
+          { type: 'number', message: '请输入有效的金额', trigger: 'blur' },
+          { min: 0.01, message: '充值金额必须大于0', trigger: 'blur' },
+          { max: 10000, message: '充值金额不能超过10000', trigger: 'blur' }
+        ]
       },
       rechargeList: []
     }
@@ -52,14 +57,19 @@ export default {
   computed: {
     ...mapState(['userInfo'])
   },
-  mounted() {
-    this.loadRechargeList()
-  },
   methods: {
+    ...mapMutations(['SET_USER_INFO']),
     loadRechargeList() {
       if (this.userInfo.id) {
         getRechargeList(this.userInfo.id).then(res => {
           this.rechargeList = res.data
+        })
+      }
+    },
+    updateUserInfo() {
+      if (this.userInfo.id) {
+        getUserById(this.userInfo.id).then(res => {
+          this.SET_USER_INFO(res.data)
         })
       }
     },
@@ -74,12 +84,15 @@ export default {
           }).then(() => {
             this.$message.success('充值成功')
             this.loadRechargeList()
-            // 更新用户信息
-            this.userInfo.balance = (this.userInfo.balance || 0) + this.rechargeForm.amount
+            // 从后端获取最新用户信息
+            this.updateUserInfo()
           })
         }
       })
     }
+  },
+  mounted() {
+    this.loadRechargeList()
   }
 }
 </script>

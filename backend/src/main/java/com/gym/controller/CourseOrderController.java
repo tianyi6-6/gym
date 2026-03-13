@@ -5,6 +5,7 @@ import com.gym.entity.CourseOrder;
 import com.gym.service.CourseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 import java.util.List;
 
@@ -31,12 +32,12 @@ public class CourseOrderController {
     }
 
     @PostMapping("/create")
-    public Result<Void> createOrder(@RequestBody CourseOrder order) {
+    public Result<Void> createOrder(@RequestBody @Valid CourseOrder order) {
         return orderService.createOrder(order);
     }
 
     @PostMapping("/update")
-    public Result<Void> updateOrder(@RequestBody CourseOrder order) {
+    public Result<Void> updateOrder(@RequestBody @Valid CourseOrder order) {
         return orderService.updateOrder(order);
     }
 

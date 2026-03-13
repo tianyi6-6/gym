@@ -70,21 +70,66 @@ export default {
     updateChart(data) {
       if (!this.chart || !data) return
 
-      const series = data.series.map(item => ({
-        name: item.name,
-        type: 'line',
-        smooth: this.smooth,
-        data: item.data,
-        itemStyle: {
-          color: item.color || '#409EFF'
-        },
-        areaStyle: this.showArea ? {
-          opacity: 0.3
-        } : undefined,
-        emphasis: {
-          focus: 'series'
+      const series = data.series.map((item, index) => {
+        // 为不同的数据线设置差异化样式
+        let lineStyle, itemStyle, symbol, symbolSize, lineWidth;
+        
+        if (index === 0) {
+          // 课程销售数据线
+          lineStyle = {
+            type: 'solid', // 实线
+            width: 3 // 较粗的线条
+          };
+          itemStyle = {
+            color: '#409EFF' // 蓝色
+          };
+          symbol = 'circle'; // 圆形标记点
+          symbolSize = 8;
+          lineWidth = 3;
+        } else if (index === 1) {
+          // 会员增长数据线
+          lineStyle = {
+            type: 'dashed', // 虚线
+            width: 2 // 较细的线条
+          };
+          itemStyle = {
+            color: '#67C23A' // 绿色
+          };
+          symbol = 'triangle'; // 三角形标记点
+          symbolSize = 10;
+          lineWidth = 2;
+        } else {
+          // 默认样式
+          lineStyle = {
+            type: 'solid',
+            width: 2
+          };
+          itemStyle = {
+            color: item.color || '#409EFF'
+          };
+          symbol = 'circle';
+          symbolSize = 6;
+          lineWidth = 2;
         }
-      }))
+        
+        return {
+          name: item.name,
+          type: 'line',
+          smooth: this.smooth,
+          data: item.data,
+          itemStyle: itemStyle,
+          lineStyle: lineStyle,
+          symbol: symbol,
+          symbolSize: symbolSize,
+          lineWidth: lineWidth,
+          areaStyle: this.showArea ? {
+            opacity: 0.3
+          } : undefined,
+          emphasis: {
+            focus: 'series'
+          }
+        };
+      });
 
       const option = {
         tooltip: {

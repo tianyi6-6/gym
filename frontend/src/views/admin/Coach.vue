@@ -10,6 +10,11 @@
         <el-table-column prop="id" label="ID" width="80" sortable :sort-orders="['ascending', 'descending']" :default-sort="{prop: 'id', order: 'ascending'}"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
         <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column label="密码" width="120">
+          <template slot-scope="scope">
+            <span>••••••</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="phone" label="手机号"></el-table-column>
         <el-table-column prop="specialty" label="专长"></el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -87,7 +92,11 @@ export default {
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的11位手机号码', trigger: 'blur' }
+        ]
       }
     }
   },

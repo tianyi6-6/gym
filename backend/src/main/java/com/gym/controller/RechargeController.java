@@ -5,6 +5,7 @@ import com.gym.entity.Recharge;
 import com.gym.service.RechargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
 import java.util.List;
 
@@ -21,8 +22,7 @@ public class RechargeController {
     }
 
     @PostMapping
-    public Result<Void> recharge(@RequestBody Recharge recharge) {
+    public Result<Void> recharge(@RequestBody @Valid Recharge recharge) {
         return rechargeService.recharge(recharge);
     }
 }
-

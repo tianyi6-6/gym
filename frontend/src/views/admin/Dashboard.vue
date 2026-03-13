@@ -47,7 +47,7 @@
               <el-radio-group v-model="chartTimeRange" size="small" style="float: right">
                 <el-radio-button label="week">近7天</el-radio-button>
                 <el-radio-button label="month">近30天</el-radio-button>
-                <el-radio-button label="quarter">近90天</el-radio-button>
+                <el-radio-button label="year">近12个月</el-radio-button>
               </el-radio-group>
             </div>
             <LineChart 
@@ -106,15 +106,18 @@
             </div>
             <div class="quick-actions">
               <el-button type="primary" icon="el-icon-plus" @click="handleAddUser">
-                新建用户
+                新增用户
               </el-button>
-              <el-button type="success" icon="el-icon-bell" @click="handlePublish">
+              <el-button type="success" icon="el-icon-user" @click="handleAddCoach">
+                新增教练
+              </el-button>
+              <el-button type="warning" icon="el-icon-bell" @click="handlePublish">
                 发布公告
               </el-button>
-              <el-button type="warning" icon="el-icon-sold-out" @click="handleQuickOrder">
+              <el-button type="info" icon="el-icon-sold-out" @click="handleQuickOrder">
                 快速开单
               </el-button>
-              <el-button type="info" icon="el-icon-refresh" @click="refreshData">
+              <el-button type="danger" icon="el-icon-refresh" @click="refreshData">
                 刷新数据
               </el-button>
             </div>
@@ -202,7 +205,12 @@ export default {
   },
   watch: {
     chartTimeRange() {
-      this.loadMainChartData()
+      this.timeRange = this.chartTimeRange
+      this.refreshData()
+    },
+    timeRange() {
+      this.chartTimeRange = this.timeRange
+      this.refreshData()
     }
   },
   mounted() {
@@ -270,7 +278,7 @@ export default {
       const daysMap = {
         week: 7,
         month: 30,
-        quarter: 90
+        year: 365
       }
       const days = daysMap[this.chartTimeRange]
       
@@ -404,10 +412,13 @@ export default {
       }
     },
     handleAddUser() {
-      this.$router.push('/admin/user')
+      this.$router.push({ path: '/register', query: { role: 'user' } })
+    },
+    handleAddCoach() {
+      this.$router.push({ path: '/register', query: { role: 'coach' } })
     },
     handlePublish() {
-      this.$message.info('发布公告功能开发中')
+      this.$router.push('/admin/notice')
     },
     handleQuickOrder() {
       this.$router.push('/admin/order')

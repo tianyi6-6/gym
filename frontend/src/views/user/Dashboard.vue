@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import { getNoticeList, getUserOrderList, getUserStats } from '@/api'
+import { getNoticeList, getUserOrderList, getUserStats, getCourseList } from '@/api'
 import { mapState } from 'vuex'
 import LineChart from '@/components/LineChart.vue'
 import BarChart from '@/components/BarChart.vue'
@@ -318,16 +318,33 @@ export default {
     },
     
     loadCourseTypeData() {
-      if (!this.userInfo.id) return
-      
-      getUserStats(this.userInfo.id).then(res => {
-        this.courseTypeData = res.data.courseTypeDistribution || [
-          { name: '力量训练', value: 0 },
-          { name: '有氧运动', value: 0 },
-          { name: '瑜伽', value: 0 },
-          { name: '游泳', value: 0 },
-          { name: '其他', value: 0 }
-        ]
+      // 从课程列表获取真实的课程类型分布
+      getCourseList().then(res => {
+        const courseList = res.data.filter(c => c.status === 1)
+        const courseTypeMap = {
+          '力量训练': 0,
+          '有氧运动': 0,
+          '瑜伽': 0,
+          '游泳': 0,
+          '其他': 0
+        }
+        
+        courseList.forEach(course => {
+          const courseName = course.name
+          if (courseName.includes('力量')) {
+            courseTypeMap['力量训练']++
+          } else if (courseName.includes('有氧')) {
+            courseTypeMap['有氧运动']++
+          } else if (courseName.includes('瑜伽')) {
+            courseTypeMap['瑜伽']++
+          } else if (courseName.includes('游泳')) {
+            courseTypeMap['游泳']++
+          } else {
+            courseTypeMap['其他']++
+          }
+        })
+        
+        this.courseTypeData = Object.entries(courseTypeMap).map(([name, value]) => ({ name, value }))
       }).catch(() => {
         this.courseTypeData = [
           { name: '力量训练', value: 0 },

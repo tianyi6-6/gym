@@ -107,7 +107,7 @@ export default {
         name: '',
         phone: '',
         email: '',
-        role: 'user',
+        role: this.$route.query.role || 'user',
         memberLevel: '普通会员',
         specialty: '',
         experience: '',
@@ -308,26 +308,36 @@ export default {
   }
   
   .score-item:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
     -ms-grid-column: 1;
     -ms-grid-row: 1;
   }
   
   .score-item:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
     -ms-grid-column: 2;
     -ms-grid-row: 1;
   }
   
   .score-item:nth-child(3) {
+    grid-column: 1;
+    grid-row: 2;
     -ms-grid-column: 1;
     -ms-grid-row: 2;
   }
   
   .score-item:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
     -ms-grid-column: 2;
     -ms-grid-row: 2;
   }
   
   .score-item-full {
+    grid-column: 1 / -1;
+    grid-row: 3;
     -ms-grid-column: 1;
     -ms-grid-column-span: 2;
     -ms-grid-row: 3;
@@ -336,6 +346,7 @@ export default {
 
 @-moz-document url-prefix() {
   .score-item {
+    box-sizing: border-box;
     -moz-box-sizing: border-box;
   }
 }

@@ -54,5 +54,17 @@
     <delete id="delete">
         DELETE FROM course WHERE id = #{id}
     </delete>
+    
+    <select id="findByPage" resultMap="CourseResultMap">
+        SELECT c.*, co.name as coach_name
+        FROM course c
+        LEFT JOIN coach co ON c.coach_id = co.id
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM course
+    </select>
 </mapper>
 

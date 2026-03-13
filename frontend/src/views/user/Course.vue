@@ -20,19 +20,32 @@
           </el-card>
         </el-col>
       </el-row>
+      <div class="pagination" v-if="total > 0">
+        <el-pagination
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          :page-size="pageSize"
+          :current-page="currentPage"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import { getCourseList } from '@/api'
+import { getCoursePage, getCourseCount } from '@/api'
 import { mapState } from 'vuex'
 
 export default {
   name: 'UserCourse',
   data() {
     return {
-      courseList: []
+      courseList: [],
+      currentPage: 1,
+      pageSize: 9,
+      total: 0
     }
   },
   computed: {
@@ -43,9 +56,20 @@ export default {
   },
   methods: {
     loadCourseList() {
-      getCourseList().then(res => {
+      getCoursePage(this.currentPage, this.pageSize).then(res => {
         this.courseList = res.data.filter(c => c.status === 1)
       })
+      getCourseCount().then(res => {
+        this.total = res.data
+      })
+    },
+    handleSizeChange(size) {
+      this.pageSize = size
+      this.loadCourseList()
+    },
+    handleCurrentChange(current) {
+      this.currentPage = current
+      this.loadCourseList()
     },
     handleBuy(course) {
       this.$confirm(`确定要购买课程"${course.name}"吗？价格：¥${course.price}`, '确认购买', {
@@ -58,6 +82,14 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+</style>
 
 <style scoped>
 .course-page {
@@ -80,6 +112,9 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  display: box;
+  line-clamp: 2;
+  box-orient: vertical;
 }
 
 .course-info {

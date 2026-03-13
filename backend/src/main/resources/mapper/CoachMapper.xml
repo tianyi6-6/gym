@@ -4,6 +4,9 @@
     <select id="findByUsername" resultType="com.gym.entity.Coach">
         SELECT * FROM coach WHERE username = #{username}
     </select>
+    <select id="findByPhone" resultType="com.gym.entity.Coach">
+        SELECT * FROM coach WHERE phone = #{phone}
+    </select>
     <select id="findById" resultType="com.gym.entity.Coach">
         SELECT * FROM coach WHERE id = #{id}
     </select>

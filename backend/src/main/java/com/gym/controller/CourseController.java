@@ -20,6 +20,16 @@ public class CourseController {
         return courseService.findAll();
     }
 
+    @GetMapping("/page")
+    public Result<List<Course>> page(@RequestParam int page, @RequestParam int size) {
+        return courseService.findByPage(page, size);
+    }
+
+    @GetMapping("/count")
+    public Result<Long> count() {
+        return courseService.count();
+    }
+
     @GetMapping("/{id}")
     public Result<Course> getById(@PathVariable Integer id) {
         return courseService.findById(id);

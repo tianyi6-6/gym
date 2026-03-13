@@ -12,7 +12,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
   
   @Autowired
   private RoleInterceptor roleInterceptor;
-
+  
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(interceptorConfig)

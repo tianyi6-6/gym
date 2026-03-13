@@ -3,6 +3,18 @@
     <el-header class="header">
       <div class="logo">私人健身房管理系统</div>
       <div class="user-info">
+        <div class="avatar-container" @click="handleAvatarClick">
+          <div v-if="loading" class="avatar-loading">
+            <el-icon class="loading-icon"><i class="el-icon-loading"></i></el-icon>
+          </div>
+          <img 
+            v-else 
+            :src="avatarUrl" 
+            :alt="userInfo.name || userInfo.username" 
+            class="avatar"
+            @error="handleAvatarError"
+          >
+        </div>
         <span>{{ userInfo.name || userInfo.username }}</span>
         <el-button type="text" @click="handleLogout">退出</el-button>
       </div>
@@ -62,6 +74,10 @@
               <i class="el-icon-s-data"></i>
               <span>体测数据管理</span>
             </el-menu-item>
+            <el-menu-item index="/admin/profile">
+              <i class="el-icon-user"></i>
+              <span>管理员信息</span>
+            </el-menu-item>
           </template>
           
           <!-- 教练菜单 -->
@@ -118,14 +134,24 @@
 
 <script>
 import { mapState } from 'vuex'
+import { getAdminInfo } from '@/api'
 
 export default {
   name: 'MainLayout',
+  data() {
+    return {
+      avatarUrl: '',
+      loading: false
+    }
+  },
   computed: {
     ...mapState(['userInfo']),
     activeMenu() {
       return this.$route.path
     }
+  },
+  mounted() {
+    this.loadAvatar()
   },
   methods: {
     handleLogout() {
@@ -139,6 +165,42 @@ export default {
           }
         })
       }
+    },
+    async loadAvatar() {
+      if (this.userInfo.role === 'admin') {
+        this.loading = true
+        try {
+          const res = await getAdminInfo()
+          if (res.data && res.data.avatar) {
+            // 确保头像URL通过代理访问
+            let avatar = res.data.avatar
+            if (!avatar.startsWith('http')) {
+              if (!avatar.startsWith('/api')) {
+                avatar = '/api' + avatar
+              }
+            }
+            this.avatarUrl = avatar
+          }
+        } catch (error) {
+          console.error('加载头像失败:', error)
+        } finally {
+          this.loading = false
+        }
+      }
+    },
+    handleAvatarClick() {
+      if (this.userInfo.role === 'admin' && this.$router.currentRoute.path !== '/admin/profile') {
+        this.$router.push('/admin/profile').catch(err => {
+          // 忽略重复导航错误
+          if (err.name !== 'NavigationDuplicated') {
+            console.error(err)
+          }
+        })
+      }
+    },
+    handleAvatarError(e) {
+      // 图片加载失败时显示默认头像
+      e.target.src = '/api/upload/gym/admin/default.jpg'
     }
   }
 }
@@ -167,6 +229,79 @@ export default {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-loading {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-icon {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .avatar-loading {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .avatar-loading {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .loading-icon {
+    font-size: 16px;
+  }
 }
 
 .aside {

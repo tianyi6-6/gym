@@ -318,6 +318,32 @@ export const deleteHealthRiskWarningByUserId = (userId) => {
   return axios.delete(`/health-risk-warning/user/${userId}`)
 }
 
+// 管理员相关
+export const getAdminInfo = () => {
+  return axios.get('/admin/info')
+}
+
+export const updateAdminInfo = (data) => {
+  return axios.post('/admin/update', data)
+}
+
+export const changeAdminPassword = (data) => {
+  return axios.post('/admin/change-password', data)
+}
+
+export const uploadAdminAvatar = (formData) => {
+  const token = localStorage.getItem('token')
+  const headers = {
+    'Content-Type': 'multipart/form-data'
+  }
+  if (token) {
+    headers['Authorization'] = 'Bearer ' + token
+  }
+  return axios.post('/admin/upload-avatar', formData, {
+    headers
+  })
+}
+
 // Dashboard相关
 export const getDashboardStats = () => {
   return axios.get('/dashboard/stats')

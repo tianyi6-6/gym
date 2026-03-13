@@ -18,4 +18,10 @@ public class JWTUtil {
     public boolean validateToken(String token) {
         return true;
     }
+    
+    // 临时实现，返回固定用户名admin
+    public String extractUsername(String token) {
+        // 实际项目中应该从token中解析用户名
+        return "admin";
+    }
 }

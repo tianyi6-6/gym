@@ -19,6 +19,11 @@ axios.interceptors.request.use(
     if (role) {
       config.headers['X-Role'] = role
     }
+    // 添加Authorization头部
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
     return config
   },
   error => {

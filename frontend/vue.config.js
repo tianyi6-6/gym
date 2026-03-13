@@ -8,6 +8,13 @@ module.exports = {
         pathRewrite: {
           '^/api': '/api'
         }
+      },
+      '/upload': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/upload': '/upload'
+        }
       }
     }
   }

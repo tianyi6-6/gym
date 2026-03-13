@@ -83,10 +83,14 @@ const routes = [
         component: () => import('@/views/admin/HealthProfile.vue'),
         meta: { role: 'admin' }
       },
-      {
-        path: '/admin/body-assessment',
+      { path: '/admin/body-assessment',
         name: 'AdminBodyAssessment',
         component: () => import('@/views/admin/BodyAssessment.vue'),
+        meta: { role: 'admin' }
+      },
+      { path: '/admin/profile',
+        name: 'AdminProfile',
+        component: () => import('@/views/admin/AdminProfile.vue'),
         meta: { role: 'admin' }
       },
       // 教练路由

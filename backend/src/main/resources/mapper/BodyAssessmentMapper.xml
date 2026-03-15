@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.BodyAssessmentMapper">
+    <select id="findById" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment WHERE id = #{id}
+    </select>
+    <select id="findByUserId" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment WHERE user_id = #{userId} ORDER BY assessment_date DESC
+    </select>
+    <select id="findByUserIdOrderByDate" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment WHERE user_id = #{userId} ORDER BY assessment_date DESC
+    </select>
+    <select id="findByDateRange" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment 
+        WHERE user_id = #{userId} 
+        AND assessment_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY assessment_date DESC
+    </select>
+    <select id="findByCoachId" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment WHERE coach_id = #{coachId} ORDER BY assessment_date DESC
+    </select>
+    <select id="findAll" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment ORDER BY assessment_date DESC
+    </select>
+    <select id="findLatestByUserId" resultType="com.gym.entity.BodyAssessment">
+        SELECT * FROM body_assessment 
+        WHERE user_id = #{userId} 
+        ORDER BY assessment_date DESC 
+        LIMIT 1
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO body_assessment (user_id, assessment_date, body_fat_rate, muscle_mass, bone_density, 
+            basal_metabolic_rate, bmi, visceral_fat_level, body_water_rate, protein_rate, 
+            skeletal_muscle_mass, weight, height, chest_circumference, waist_circumference, 
+            hip_circumference, assessment_result, coach_id)
+        VALUES (#{userId}, #{assessmentDate}, #{bodyFatRate}, #{muscleMass}, #{boneDensity}, 
+            #{basalMetabolicRate}, #{bmi}, #{visceralFatLevel}, #{bodyWaterRate}, #{proteinRate}, 
+            #{skeletalMuscleMass}, #{weight}, #{height}, #{chestCircumference}, #{waistCircumference}, 
+            #{hipCircumference}, #{assessmentResult}, #{coachId})
+    </insert>
+    <update id="update">
+        UPDATE body_assessment
+        <set>
+            <if test="assessmentDate != null">assessment_date = #{assessmentDate},</if>
+            <if test="bodyFatRate != null">body_fat_rate = #{bodyFatRate},</if>
+            <if test="muscleMass != null">muscle_mass = #{muscleMass},</if>
+            <if test="boneDensity != null">bone_density = #{boneDensity},</if>
+            <if test="basalMetabolicRate != null">basal_metabolic_rate = #{basalMetabolicRate},</if>
+            <if test="bmi != null">bmi = #{bmi},</if>
+            <if test="visceralFatLevel != null">visceral_fat_level = #{visceralFatLevel},</if>
+            <if test="bodyWaterRate != null">body_water_rate = #{bodyWaterRate},</if>
+            <if test="proteinRate != null">protein_rate = #{proteinRate},</if>
+            <if test="skeletalMuscleMass != null">skeletal_muscle_mass = #{skeletalMuscleMass},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="chestCircumference != null">chest_circumference = #{chestCircumference},</if>
+            <if test="waistCircumference != null">waist_circumference = #{waistCircumference},</if>
+            <if test="hipCircumference != null">hip_circumference = #{hipCircumference},</if>
+            <if test="assessmentResult != null">assessment_result = #{assessmentResult},</if>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM body_assessment WHERE id = #{id}
+    </delete>
+    <delete id="deleteByUserId">
+        DELETE FROM body_assessment WHERE user_id = #{userId}
+    </delete>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.ExperienceMapper">
+    <resultMap id="ExperienceResultMap" type="com.gym.entity.Experience">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="coachId" column="coach_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="image" column="image"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userName" column="user_name"/>
+        <result property="coachName" column="coach_name"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="ExperienceResultMap">
+        SELECT e.*, u.name as user_name, c.name as coach_name
+        FROM experience e
+        LEFT JOIN user u ON e.user_id = u.id
+        LEFT JOIN coach c ON e.coach_id = c.id
+        ORDER BY e.create_time DESC
+    </select>
+    <select id="findById" resultMap="ExperienceResultMap">
+        SELECT e.*, u.name as user_name, c.name as coach_name
+        FROM experience e
+        LEFT JOIN user u ON e.user_id = u.id
+        LEFT JOIN coach c ON e.coach_id = c.id
+        WHERE e.id = #{id}
+    </select>
+    <select id="findByUserId" resultMap="ExperienceResultMap">
+        SELECT e.*, u.name as user_name, c.name as coach_name
+        FROM experience e
+        LEFT JOIN user u ON e.user_id = u.id
+        LEFT JOIN coach c ON e.coach_id = c.id
+        WHERE e.user_id = #{userId}
+        ORDER BY e.create_time DESC
+    </select>
+    <select id="findByCoachId" resultMap="ExperienceResultMap">
+        SELECT e.*, u.name as user_name, c.name as coach_name
+        FROM experience e
+        LEFT JOIN user u ON e.user_id = u.id
+        LEFT JOIN coach c ON e.coach_id = c.id
+        WHERE e.coach_id = #{coachId}
+        ORDER BY e.create_time DESC
+    </select>
+    <insert id="insert">
+        INSERT INTO experience (user_id, coach_id, title, content, image, status)
+        VALUES (#{userId}, #{coachId}, #{title}, #{content}, #{image}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE experience
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <update id="increaseViewCount">
+        UPDATE experience SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM experience WHERE id = #{id}
+    </delete>
+</mapper>
+

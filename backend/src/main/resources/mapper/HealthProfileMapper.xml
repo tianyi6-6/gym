@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.HealthProfileMapper">
+    <select id="findByUserId" resultType="com.gym.entity.HealthProfile">
+        SELECT * FROM health_profile WHERE user_id = #{userId}
+    </select>
+    <select id="findById" resultType="com.gym.entity.HealthProfile">
+        SELECT * FROM health_profile WHERE id = #{id}
+    </select>
+    <select id="findAll" resultType="com.gym.entity.HealthProfile">
+        SELECT * FROM health_profile ORDER BY create_time DESC
+    </select>
+    <select id="findByRiskLevel" resultType="com.gym.entity.HealthProfile">
+        SELECT * FROM health_profile WHERE risk_level = #{riskLevel} ORDER BY create_time DESC
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO health_profile (user_id, age, gender, height, weight, occupation, medical_history, 
+            allergy_history, surgery_history, exercise_history, exercise_habits, exercise_preference, 
+            sleep_habits, diet_habits, smoking_status, drinking_status, risk_level, risk_factors)
+        VALUES (#{userId}, #{age}, #{gender}, #{height}, #{weight}, #{occupation}, #{medicalHistory}, 
+            #{allergyHistory}, #{surgeryHistory}, #{exerciseHistory}, #{exerciseHabits}, #{exercisePreference}, 
+            #{sleepHabits}, #{dietHabits}, #{smokingStatus}, #{drinkingStatus}, #{riskLevel}, #{riskFactors})
+    </insert>
+    <update id="update">
+        UPDATE health_profile
+        <set>
+            <if test="age != null">age = #{age},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="occupation != null">occupation = #{occupation},</if>
+            <if test="medicalHistory != null">medical_history = #{medicalHistory},</if>
+            <if test="allergyHistory != null">allergy_history = #{allergyHistory},</if>
+            <if test="surgeryHistory != null">surgery_history = #{surgeryHistory},</if>
+            <if test="exerciseHistory != null">exercise_history = #{exerciseHistory},</if>
+            <if test="exerciseHabits != null">exercise_habits = #{exerciseHabits},</if>
+            <if test="exercisePreference != null">exercise_preference = #{exercisePreference},</if>
+            <if test="sleepHabits != null">sleep_habits = #{sleepHabits},</if>
+            <if test="dietHabits != null">diet_habits = #{dietHabits},</if>
+            <if test="smokingStatus != null">smoking_status = #{smokingStatus},</if>
+            <if test="drinkingStatus != null">drinking_status = #{drinkingStatus},</if>
+            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
+            <if test="riskFactors != null">risk_factors = #{riskFactors},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM health_profile WHERE id = #{id}
+    </delete>
+    <delete id="deleteByUserId">
+        DELETE FROM health_profile WHERE user_id = #{userId}
+    </delete>
+</mapper>

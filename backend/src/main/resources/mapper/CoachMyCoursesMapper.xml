@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachMyCoursesMapper">
+    <resultMap id="CoachMyCoursesResultMap" type="com.gym.entity.CoachMyCourses">
+        <id property="id" column="id"/>
+        <result property="coachId" column="coach_id"/>
+        <result property="courseId" column="course_id"/>
+        <result property="courseName" column="course_name"/>
+        <result property="courseType" column="course_type"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="duration" column="duration"/>
+        <result property="difficultyLevel" column="difficulty_level"/>
+        <result property="studentCount" column="student_count"/>
+        <result property="totalSessions" column="total_sessions"/>
+        <result property="rating" column="rating"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="coachName" column="coach_name"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="CoachMyCoursesResultMap">
+        SELECT cmc.*, co.name as coach_name
+        FROM coach_my_courses cmc
+        LEFT JOIN coach co ON cmc.coach_id = co.id
+        ORDER BY cmc.create_time DESC
+    </select>
+    <select id="findByCoachId" resultMap="CoachMyCoursesResultMap">
+        SELECT cmc.*, co.name as coach_name
+        FROM coach_my_courses cmc
+        LEFT JOIN coach co ON cmc.coach_id = co.id
+        WHERE cmc.coach_id = #{coachId}
+        ORDER BY cmc.create_time DESC
+    </select>
+    <select id="findById" resultMap="CoachMyCoursesResultMap">
+        SELECT cmc.*, co.name as coach_name
+        FROM coach_my_courses cmc
+        LEFT JOIN coach co ON cmc.coach_id = co.id
+        WHERE cmc.id = #{id}
+    </select>
+    <insert id="insert">
+        INSERT INTO coach_my_courses (coach_id, course_id, course_name, course_type, description, price, duration, difficulty_level, student_count, total_sessions, rating, status)
+        VALUES (#{coachId}, #{courseId}, #{courseName}, #{courseType}, #{description}, #{price}, #{duration}, #{difficultyLevel}, #{studentCount}, #{totalSessions}, #{rating}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE coach_my_courses
+        <set>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="courseName != null">course_name = #{courseName},</if>
+            <if test="courseType != null">course_type = #{courseType},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="difficultyLevel != null">difficulty_level = #{difficultyLevel},</if>
+            <if test="studentCount != null">student_count = #{studentCount},</if>
+            <if test="totalSessions != null">total_sessions = #{totalSessions},</if>
+            <if test="rating != null">rating = #{rating},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach_my_courses WHERE id = #{id}
+    </delete>
+    <delete id="deleteByCoachId">
+        DELETE FROM coach_my_courses WHERE coach_id = #{coachId}
+    </delete>
+</mapper>

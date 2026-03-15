@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CourseMapper">
+    <resultMap id="CourseResultMap" type="com.gym.entity.Course">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="coachId" column="coach_id"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="duration" column="duration"/>
+        <result property="image" column="image"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="coachName" column="coach_name"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="CourseResultMap">
+        SELECT c.*, co.name as coach_name
+        FROM course c
+        LEFT JOIN coach co ON c.coach_id = co.id
+        ORDER BY c.create_time DESC
+    </select>
+    <select id="findById" resultMap="CourseResultMap">
+        SELECT c.*, co.name as coach_name
+        FROM course c
+        LEFT JOIN coach co ON c.coach_id = co.id
+        WHERE c.id = #{id}
+    </select>
+    <select id="findByCoachId" resultMap="CourseResultMap">
+        SELECT c.*, co.name as coach_name
+        FROM course c
+        LEFT JOIN coach co ON c.coach_id = co.id
+        WHERE c.coach_id = #{coachId}
+        ORDER BY c.create_time DESC
+    </select>
+    <insert id="insert">
+        INSERT INTO course (name, coach_id, description, price, duration, image, status)
+        VALUES (#{name}, #{coachId}, #{description}, #{price}, #{duration}, #{image}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE course
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="coachId != null">coach_id = #{coachId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM course WHERE id = #{id}
+    </delete>
+    
+    <select id="findByPage" resultMap="CourseResultMap">
+        SELECT c.*, co.name as coach_name
+        FROM course c
+        LEFT JOIN coach co ON c.coach_id = co.id
+        ORDER BY c.create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM course
+    </select>
+</mapper>
+

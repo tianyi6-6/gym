@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachHealthFitnessMapper">
+    <select id="findByCoachId" resultType="com.gym.entity.CoachHealthFitness">
+        SELECT * FROM coach_health_fitness WHERE coach_id = #{coachId} ORDER BY record_date DESC
+    </select>
+    <select id="findByCoachIdAndLimit" resultType="com.gym.entity.CoachHealthFitness">
+        SELECT * FROM coach_health_fitness 
+        WHERE coach_id = #{coachId} 
+        ORDER BY record_date DESC 
+        LIMIT #{limit}
+    </select>
+    <select id="findRecentByCoachId" resultType="com.gym.entity.CoachHealthFitness">
+        SELECT * FROM coach_health_fitness 
+        WHERE coach_id = #{coachId} 
+        AND record_date >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        ORDER BY record_date DESC
+    </select>
+    <select id="findLatestByCoachId" resultType="com.gym.entity.CoachHealthFitness">
+        SELECT * FROM coach_health_fitness 
+        WHERE coach_id = #{coachId} 
+        ORDER BY record_date DESC 
+        LIMIT 1
+    </select>
+    <select id="findByCoachIdAndDate" resultType="com.gym.entity.CoachHealthFitness">
+        SELECT * FROM coach_health_fitness 
+        WHERE coach_id = #{coachId} AND record_date = #{recordDate}
+    </select>
+    <insert id="insert">
+        INSERT INTO coach_health_fitness (coach_id, record_date, weight, body_fat_rate, heart_rate, training_hours, calories_burned, muscle_mass, bmi, strength_score, endurance_score, flexibility_score, speed_score, coordination_score)
+        VALUES (#{coachId}, #{recordDate}, #{weight}, #{bodyFatRate}, #{heartRate}, #{trainingHours}, #{caloriesBurned}, #{muscleMass}, #{bmi}, #{strengthScore}, #{enduranceScore}, #{flexibilityScore}, #{speedScore}, #{coordinationScore})
+    </insert>
+    <update id="update">
+        UPDATE coach_health_fitness
+        <set>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="bodyFatRate != null">body_fat_rate = #{bodyFatRate},</if>
+            <if test="heartRate != null">heart_rate = #{heartRate},</if>
+            <if test="trainingHours != null">training_hours = #{trainingHours},</if>
+            <if test="caloriesBurned != null">calories_burned = #{caloriesBurned},</if>
+            <if test="muscleMass != null">muscle_mass = #{muscleMass},</if>
+            <if test="bmi != null">bmi = #{bmi},</if>
+            <if test="strengthScore != null">strength_score = #{strengthScore},</if>
+            <if test="enduranceScore != null">endurance_score = #{enduranceScore},</if>
+            <if test="flexibilityScore != null">flexibility_score = #{flexibilityScore},</if>
+            <if test="speedScore != null">speed_score = #{speedScore},</if>
+            <if test="coordinationScore != null">coordination_score = #{coordinationScore},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach_health_fitness WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachAppointmentMapper">
+    <resultMap id="BaseResultMap" type="com.gym.entity.CoachAppointment">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="coach_id" property="coachId" />
+        <result column="appointment_time" property="appointmentTime" />
+        <result column="duration" property="duration" />
+        <result column="remark" property="remark" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="user_name" property="userName" />
+        <result column="coach_name" property="coachName" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.gym.entity.CoachAppointment">
+        INSERT INTO coach_appointment (user_id, coach_id, appointment_time, duration, remark, status, create_time, update_time)
+        VALUES (#{userId}, #{coachId}, #{appointmentTime}, #{duration}, #{remark}, #{status}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="com.gym.entity.CoachAppointment">
+        UPDATE coach_appointment
+        SET user_id = #{userId}, coach_id = #{coachId}, appointment_time = #{appointmentTime}, 
+            duration = #{duration}, remark = #{remark}, status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM coach_appointment WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.id = #{id}
+    </select>
+
+    <select id="selectByCoachId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.coach_id = #{coachId}
+        ORDER BY ca.create_time DESC
+    </select>
+
+    <select id="selectByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.user_id = #{userId}
+        ORDER BY ca.create_time DESC
+    </select>
+
+    <select id="selectByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.status = #{status}
+        ORDER BY ca.create_time DESC
+    </select>
+
+    <select id="selectByCoachIdAndStatus" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.coach_id = #{param1} AND ca.status = #{param2}
+        ORDER BY ca.create_time DESC
+    </select>
+
+    <select id="selectByConditions" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE 1=1
+        <if test="coachId != null">
+            AND ca.coach_id = #{coachId}
+        </if>
+        <if test="userId != null">
+            AND ca.user_id = #{userId}
+        </if>
+        <if test="status != null">
+            AND ca.status = #{status}
+        </if>
+        <if test="startDate != null">
+            AND ca.appointment_time &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND ca.appointment_time &lt;= #{endDate}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND u.username LIKE CONCAT('%', #{userName}, '%')
+        </if>
+        ORDER BY ca.create_time DESC
+    </select>
+
+    <select id="selectByDateRange" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT ca.*, u.username AS user_name, c.name AS coach_name
+        FROM coach_appointment ca
+        LEFT JOIN user u ON ca.user_id = u.id
+        LEFT JOIN coach c ON ca.coach_id = c.id
+        WHERE ca.coach_id = #{coachId}
+        AND ca.appointment_time BETWEEN #{startDate} AND #{endDate}
+        ORDER BY ca.appointment_time ASC
+    </select>
+</mapper>

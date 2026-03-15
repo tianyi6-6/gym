@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachScheduleMapper">
+    <resultMap id="CoachScheduleResultMap" type="com.gym.entity.CoachSchedule">
+        <id column="id" property="id"/>
+        <result column="coach_id" property="coachId"/>
+        <result column="schedule_date" property="scheduleDate"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="coach_name" property="coachName"/>
+    </resultMap>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="CoachScheduleResultMap">
+        SELECT s.*, c.name as coach_name
+        FROM coach_schedule s
+        LEFT JOIN coach c ON s.coach_id = c.id
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="findByCoachId" parameterType="java.lang.Integer" resultMap="CoachScheduleResultMap">
+        SELECT s.*, c.name as coach_name
+        FROM coach_schedule s
+        LEFT JOIN coach c ON s.coach_id = c.id
+        WHERE s.coach_id = #{coachId}
+        ORDER BY s.schedule_date DESC, s.start_time ASC
+    </select>
+
+    <select id="findByCoachIdAndDateRange" resultMap="CoachScheduleResultMap">
+        SELECT s.*, c.name as coach_name
+        FROM coach_schedule s
+        LEFT JOIN coach c ON s.coach_id = c.id
+        WHERE s.coach_id = #{coachId}
+        AND s.schedule_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY s.schedule_date ASC, s.start_time ASC
+    </select>
+
+    <select id="findByCoachIdAndDate" resultMap="CoachScheduleResultMap">
+        SELECT s.*, c.name as coach_name
+        FROM coach_schedule s
+        LEFT JOIN coach c ON s.coach_id = c.id
+        WHERE s.coach_id = #{coachId}
+        AND s.schedule_date = #{scheduleDate}
+        ORDER BY s.start_time ASC
+    </select>
+
+    <insert id="insert" parameterType="com.gym.entity.CoachSchedule">
+        INSERT INTO coach_schedule (coach_id, schedule_date, start_time, end_time, status, type, description, create_time, update_time)
+        VALUES (#{coachId}, #{scheduleDate}, #{startTime}, #{endTime}, #{status}, #{type}, #{description}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="com.gym.entity.CoachSchedule">
+        UPDATE coach_schedule
+        SET coach_id = #{coachId},
+            schedule_date = #{scheduleDate},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            status = #{status},
+            type = #{type},
+            description = #{description},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM coach_schedule WHERE id = #{id}
+    </delete>
+
+    <select id="countTimeConflict" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM coach_schedule
+        WHERE coach_id = #{coachId}
+        AND schedule_date = #{scheduleDate}
+        AND (
+            (start_time &lt; #{endTime} AND end_time &gt; #{startTime})
+        )
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+</mapper>

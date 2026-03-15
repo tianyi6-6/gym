@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.CoachMonthlyStatsMapper">
+    <select id="findByCoachId" resultType="com.gym.entity.CoachMonthlyStats">
+        SELECT * FROM coach_monthly_stats WHERE coach_id = #{coachId} ORDER BY year, month
+    </select>
+    <select id="findByCoachIdAndMonths" resultType="com.gym.entity.CoachMonthlyStats">
+        SELECT * FROM coach_monthly_stats 
+        WHERE coach_id = #{coachId} 
+        ORDER BY year DESC, month DESC 
+        LIMIT #{months}
+    </select>
+    <select id="findByCoachIdAndYearMonth" resultType="com.gym.entity.CoachMonthlyStats">
+        SELECT * FROM coach_monthly_stats 
+        WHERE coach_id = #{coachId} AND year = #{year} AND month = #{month}
+    </select>
+    <insert id="insert">
+        INSERT INTO coach_monthly_stats (coach_id, year, month, total_courses, total_students, attendance_rate, satisfaction_score, total_hours, total_calories)
+        VALUES (#{coachId}, #{year}, #{month}, #{totalCourses}, #{totalStudents}, #{attendanceRate}, #{satisfactionScore}, #{totalHours}, #{totalCalories})
+    </insert>
+    <update id="update">
+        UPDATE coach_monthly_stats
+        <set>
+            <if test="totalCourses != null">total_courses = #{totalCourses},</if>
+            <if test="totalStudents != null">total_students = #{totalStudents},</if>
+            <if test="attendanceRate != null">attendance_rate = #{attendanceRate},</if>
+            <if test="satisfactionScore != null">satisfaction_score = #{satisfactionScore},</if>
+            <if test="totalHours != null">total_hours = #{totalHours},</if>
+            <if test="totalCalories != null">total_calories = #{totalCalories},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delete">
+        DELETE FROM coach_monthly_stats WHERE id = #{id}
+    </delete>
+</mapper>

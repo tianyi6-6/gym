@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.FitnessContentMapper">
+    <resultMap id="BaseResultMap" type="com.gym.entity.FitnessContent">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="summary" property="summary" />
+        <result column="cover_image" property="coverImage" />
+        <result column="author_id" property="authorId" />
+        <result column="author_name" property="authorName" />
+        <result column="status" property="status" />
+        <result column="view_count" property="viewCount" />
+        <result column="like_count" property="likeCount" />
+        <result column="collect_count" property="collectCount" />
+        <result column="share_count" property="shareCount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="publish_time" property="publishTime" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.gym.entity.FitnessContent">
+        INSERT INTO fitness_content (title, content, summary, cover_image, author_id, author_name, status, view_count, like_count, collect_count, share_count, create_time, update_time, publish_time)
+        VALUES (#{title}, #{content}, #{summary}, #{coverImage}, #{authorId}, #{authorName}, #{status}, 0, 0, 0, 0, NOW(), NOW(), #{publishTime})
+    </insert>
+
+    <update id="update" parameterType="com.gym.entity.FitnessContent">
+        UPDATE fitness_content
+        SET title = #{title}, content = #{content}, summary = #{summary}, cover_image = #{coverImage}, 
+            author_id = #{authorId}, author_name = #{authorName}, status = #{status}, 
+            publish_time = #{publishTime}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM fitness_content WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM fitness_content WHERE id = #{id}
+    </select>
+
+    <select id="selectByAuthorId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM fitness_content WHERE author_id = #{authorId} ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM fitness_content WHERE status = #{status} ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByTagId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT fc.* FROM fitness_content fc
+        JOIN content_tag_relation ctr ON fc.id = ctr.content_id
+        WHERE ctr.tag_id = #{tagId} AND fc.status = 1
+        ORDER BY fc.create_time DESC
+    </select>
+
+    <select id="selectByConditions" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT * FROM fitness_content
+        WHERE 1=1
+        <if test="authorId != null">
+            AND author_id = #{authorId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR summary LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="startDate != null">
+            AND create_time &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND create_time &lt;= #{endDate}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectHotContent" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM fitness_content
+        WHERE status = 1
+        ORDER BY view_count DESC, like_count DESC
+        LIMIT #{limit}
+    </select>
+
+    <update id="incrementViewCount" parameterType="java.lang.Integer">
+        UPDATE fitness_content SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementLikeCount" parameterType="java.lang.Integer">
+        UPDATE fitness_content SET like_count = like_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementCollectCount" parameterType="java.lang.Integer">
+        UPDATE fitness_content SET collect_count = collect_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="incrementShareCount" parameterType="java.lang.Integer">
+        UPDATE fitness_content SET share_count = share_count + 1 WHERE id = #{id}
+    </update>
+</mapper>

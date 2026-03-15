@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gym.mapper.ContentTagMapper">
+    <resultMap id="BaseResultMap" type="com.gym.entity.ContentTag">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="description" property="description" />
+        <result column="use_count" property="useCount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.gym.entity.ContentTag">
+        INSERT INTO content_tag (name, description, use_count, create_time, update_time)
+        VALUES (#{name}, #{description}, 0, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="com.gym.entity.ContentTag">
+        UPDATE content_tag
+        SET name = #{name}, description = #{description}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM content_tag WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * FROM content_tag WHERE id = #{id}
+    </select>
+
+    <select id="selectByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM content_tag WHERE name = #{name}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM content_tag ORDER BY use_count DESC, create_time DESC
+    </select>
+
+    <select id="selectByContentId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT ct.* FROM content_tag ct
+        JOIN content_tag_relation ctr ON ct.id = ctr.tag_id
+        WHERE ctr.content_id = #{contentId}
+        ORDER BY ct.use_count DESC
+    </select>
+
+    <update id="incrementUseCount" parameterType="java.lang.Integer">
+        UPDATE content_tag SET use_count = use_count + 1 WHERE id = #{id}
+    </update>
+
+    <update id="decrementUseCount" parameterType="java.lang.Integer">
+        UPDATE content_tag SET use_count = use_count - 1 WHERE id = #{id} AND use_count > 0
+    </update>
+</mapper>

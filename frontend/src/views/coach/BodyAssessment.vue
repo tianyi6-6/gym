@@ -13,8 +13,11 @@
       <!-- 搜索和筛选 -->
       <div class="filter-section">
         <el-form :inline="true" :model="filterForm" class="filter-form">
-          <el-form-item label="用户ID">
-            <el-input v-model="filterForm.userId" placeholder="输入用户ID" clearable></el-input>
+          <el-form-item label="会员姓名">
+            <el-input v-model="filterForm.userName" placeholder="输入会员姓名" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="会员编号">
+            <el-input v-model="filterForm.userId" placeholder="输入会员编号" clearable></el-input>
           </el-form-item>
           <el-form-item label="日期范围">
             <el-date-picker
@@ -34,8 +37,44 @@
         </el-form>
       </div>
       
+      <!-- 会员选择 -->
+      <div class="member-selection" v-if="!selectedMember">
+        <el-card class="member-card">
+          <div slot="header">选择会员</div>
+          <el-table
+            :data="memberList"
+            style="width: 100%"
+            @row-click="selectMember"
+          >
+            <el-table-column prop="id" label="会员编号" width="120"></el-table-column>
+            <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+            <el-table-column prop="phone" label="电话" width="150"></el-table-column>
+            <el-table-column prop="email" label="邮箱"></el-table-column>
+            <el-table-column prop="membershipLevel" label="会员等级" width="120"></el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+      
+      <!-- 会员基本信息 -->
+      <div class="member-info" v-if="selectedMember">
+        <el-card class="info-card">
+          <div slot="header">会员基本信息</div>
+          <el-descriptions :column="3" border>
+            <el-descriptions-item label="会员编号">{{ selectedMember.id }}</el-descriptions-item>
+            <el-descriptions-item label="姓名">{{ selectedMember.name }}</el-descriptions-item>
+            <el-descriptions-item label="性别">{{ selectedMember.gender }}</el-descriptions-item>
+            <el-descriptions-item label="年龄">{{ selectedMember.age }}</el-descriptions-item>
+            <el-descriptions-item label="电话">{{ selectedMember.phone }}</el-descriptions-item>
+            <el-descriptions-item label="会员等级">{{ selectedMember.membershipLevel }}</el-descriptions-item>
+          </el-descriptions>
+          <el-button type="primary" size="small" style="margin-top: 10px" @click="handleAdd">
+            <i class="el-icon-plus"></i> 新增体测记录
+          </el-button>
+        </el-card>
+      </div>
+      
       <!-- 数据可视化 -->
-      <el-row :gutter="20" style="margin-bottom: 20px">
+      <el-row :gutter="20" style="margin-bottom: 20px" v-if="selectedMember">
         <el-col :span="12">
           <el-card>
             <div slot="header" class="chart-header">
@@ -60,6 +99,7 @@
         style="width: 100%"
         stripe
         border
+        v-if="selectedMember"
       >
         <el-table-column prop="id" label="记录ID" width="100"></el-table-column>
         <el-table-column prop="userId" label="用户ID" width="100"></el-table-column>
@@ -89,7 +129,7 @@
       </el-table>
       
       <!-- 分页 -->
-      <div class="pagination">
+      <div class="pagination" v-if="selectedMember">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -194,6 +234,30 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="健康目标" prop="healthGoal">
+              <el-input
+                v-model="assessmentForm.healthGoal"
+                type="textarea"
+                :rows="4"
+                placeholder="请输入健康目标（50-500字）"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="评估建议" prop="assessmentResult">
+              <el-input
+                v-model="assessmentForm.assessmentResult"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入评估建议"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -238,8 +302,11 @@ export default {
   data() {
     return {
       assessments: [],
+      memberList: [],
+      selectedMember: null,
       filterForm: {
         userId: '',
+        userName: '',
         dateRange: []
       },
       pagination: {
@@ -268,6 +335,8 @@ export default {
         chestCircumference: null,
         waistCircumference: null,
         hipCircumference: null,
+        healthGoal: '',
+        assessmentResult: '',
         coachId: null
       },
       viewData: {},
@@ -275,14 +344,35 @@ export default {
         userId: [{ required: true, message: '请输入用户ID', trigger: 'blur' }],
         assessmentDate: [{ required: true, message: '请选择体测日期', trigger: 'change' }],
         height: [{ required: true, message: '请输入身高', trigger: 'blur' }],
-        weight: [{ required: true, message: '请输入体重', trigger: 'blur' }]
+        weight: [{ required: true, message: '请输入体重', trigger: 'blur' }],
+        bodyFatRate: [{ 
+          required: true, 
+          message: '请输入体脂率', 
+          trigger: 'blur' 
+        }, {
+          type: 'number',
+          min: 0,
+          max: 50,
+          message: '体脂率应在0-50%之间',
+          trigger: 'blur'
+        }],
+        healthGoal: [{ 
+          required: true, 
+          message: '请输入健康目标', 
+          trigger: 'blur' 
+        }, {
+          min: 50,
+          max: 500,
+          message: '健康目标应在50-500字之间',
+          trigger: 'blur'
+        }]
       },
       bmiChart: null,
       bodyCompositionChart: null
     }
   },
   mounted() {
-    this.loadAssessments()
+    this.loadMembers()
     this.$nextTick(() => {
       this.initCharts()
     })
@@ -420,13 +510,52 @@ export default {
         this.bodyCompositionChart.resize()
       }
     },
+    // 加载会员列表
+    loadMembers() {
+      // 模拟加载会员数据
+      // 实际项目中应该调用API获取数据
+      const mockMembers = [
+        {
+          id: 1,
+          name: '张三',
+          gender: '男',
+          age: 25,
+          phone: '13800138000',
+          email: 'zhangsan@example.com',
+          membershipLevel: '黄金会员'
+        },
+        {
+          id: 2,
+          name: '李四',
+          gender: '女',
+          age: 30,
+          phone: '13900139000',
+          email: 'lisi@example.com',
+          membershipLevel: '白金会员'
+        },
+        {
+          id: 3,
+          name: '王五',
+          gender: '男',
+          age: 28,
+          phone: '13700137000',
+          email: 'wangwu@example.com',
+          membershipLevel: '钻石会员'
+        }
+      ]
+      this.memberList = mockMembers
+    },
+    
+    // 加载体测记录
     loadAssessments() {
+      if (!this.selectedMember) return
+      
       // 模拟加载数据
       // 实际项目中应该调用API获取数据
       const mockData = [
         {
           id: 1,
-          userId: 1,
+          userId: this.selectedMember.id,
           assessmentDate: new Date('2024-11-01'),
           height: 175,
           weight: 70,
@@ -442,12 +571,13 @@ export default {
           chestCircumference: 95,
           waistCircumference: 80,
           hipCircumference: 95,
-          assessmentResult: 'BMI正常;体脂率正常;',
+          healthGoal: '希望在3个月内减少体脂率到12%，增加肌肉量5kg',
+          assessmentResult: 'BMI正常;体脂率正常;建议增加力量训练，控制饮食',
           coachId: 1
         },
         {
           id: 2,
-          userId: 1,
+          userId: this.selectedMember.id,
           assessmentDate: new Date('2024-12-01'),
           height: 175,
           weight: 68,
@@ -463,34 +593,20 @@ export default {
           chestCircumference: 96,
           waistCircumference: 78,
           hipCircumference: 94,
-          assessmentResult: 'BMI正常;体脂率正常;',
-          coachId: 1
-        },
-        {
-          id: 3,
-          userId: 2,
-          assessmentDate: new Date('2024-11-15'),
-          height: 160,
-          weight: 55,
-          bodyFatRate: 20,
-          muscleMass: 30,
-          boneDensity: 1.18,
-          basalMetabolicRate: 1400,
-          bmi: 21.48,
-          visceralFatLevel: 6,
-          bodyWaterRate: 58,
-          proteinRate: 17,
-          skeletalMuscleMass: 25,
-          chestCircumference: 85,
-          waistCircumference: 70,
-          hipCircumference: 88,
-          assessmentResult: 'BMI正常;体脂率偏高;',
+          healthGoal: '希望在3个月内减少体脂率到12%，增加肌肉量5kg',
+          assessmentResult: 'BMI正常;体脂率正常;继续保持训练强度，注意营养补充',
           coachId: 1
         }
       ]
       this.assessments = mockData
       this.pagination.total = mockData.length
       this.updateCharts()
+    },
+    
+    // 选择会员
+    selectMember(row) {
+      this.selectedMember = row
+      this.loadAssessments()
     },
     searchAssessments() {
       // 模拟搜索功能
@@ -503,10 +619,15 @@ export default {
       }
     },
     handleAdd() {
+      if (!this.selectedMember) {
+        this.$message.warning('请先选择会员')
+        return
+      }
+      
       this.dialogTitle = '新增体测记录'
       this.assessmentForm = {
         id: null,
-        userId: null,
+        userId: this.selectedMember.id,
         assessmentDate: new Date(),
         height: null,
         weight: null,
@@ -522,7 +643,9 @@ export default {
         chestCircumference: null,
         waistCircumference: null,
         hipCircumference: null,
-        coachId: null
+        healthGoal: '',
+        assessmentResult: '',
+        coachId: 1 // 假设当前教练ID为1
       }
       this.dialogVisible = true
     },
@@ -538,10 +661,19 @@ export default {
     handleSave() {
       this.$refs.assessmentForm.validate((valid) => {
         if (valid) {
+          // 计算BMI
+          if (this.assessmentForm.height && this.assessmentForm.weight) {
+            const heightInMeters = this.assessmentForm.height / 100
+            this.assessmentForm.bmi = parseFloat((this.assessmentForm.weight / (heightInMeters * heightInMeters)).toFixed(2))
+          }
+          
           // 模拟保存操作
-          this.$message.success('保存成功')
-          this.dialogVisible = false
-          this.loadAssessments()
+          // 实际项目中应该调用API保存数据
+          setTimeout(() => {
+            this.$message.success('保存成功')
+            this.dialogVisible = false
+            this.loadAssessments()
+          }, 500)
         }
       })
     },

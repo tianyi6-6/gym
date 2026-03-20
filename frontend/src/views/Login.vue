@@ -26,12 +26,6 @@
           还没有账号？<el-link type="primary" @click="goToRegister">去注册</el-link>
         </div>
       </el-form>
-      <div class="tips">
-        <p>测试账号：</p>
-        <p>管理员：admin / 123456</p>
-        <p>教练：zhang / 123456</p>
-        <p>用户：zhangsan / 123456</p>
-      </div>
     </div>
   </div>
 </template>
@@ -89,6 +83,9 @@ export default {
           }).catch((error) => {
             console.error('登录失败:', error)
             this.loading = false
+            // 显示错误信息
+            const errorMessage = error.response?.data?.message || '登录失败，请稍后重试'
+            this.$message.error(errorMessage)
           })
         }
       })

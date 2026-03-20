@@ -6,6 +6,35 @@
         <el-button type="primary" size="small" style="float: right" @click="handleAdd">新增订单</el-button>
       </div>
       
+      <!-- 筛选条件 -->
+      <div class="filter-section" style="margin-bottom: 20px; padding: 0 20px 20px">
+        <el-form :inline="true" :model="filterForm" class="demo-form-inline">
+          <el-form-item label="日期范围">
+            <el-date-picker
+              v-model="filterForm.dateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
+              style="width: 240px"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="订单状态">
+            <el-select v-model="filterForm.status" placeholder="请选择状态" style="width: 120px">
+              <el-option label="全部" value="-1"></el-option>
+              <el-option label="待支付" value="0"></el-option>
+              <el-option label="已支付" value="1"></el-option>
+              <el-option label="已取消" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchOrders">查询</el-button>
+            <el-button @click="resetFilter">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
       <el-table :data="orderList" border>
         <el-table-column prop="orderNo" label="订单号" width="200" sortable :sort-orders="['ascending', 'descending']" :default-sort="{prop: 'orderNo', order: 'ascending'}"></el-table-column>
         <el-table-column prop="userName" label="用户" width="120"></el-table-column>
@@ -125,6 +154,11 @@ export default {
         price: 0,
         status: 0
       },
+      // 筛选条件
+      filterForm: {
+        dateRange: null,
+        status: -1
+      },
       rules: {
         userId: [{ required: true, message: '请选择用户', trigger: 'change' }],
         courseId: [{ required: true, message: '请选择课程', trigger: 'change' }],
@@ -145,8 +179,47 @@ export default {
   methods: {
     loadOrderList() {
       getOrderList().then(res => {
-        this.orderList = res.data.sort((a, b) => a.orderNo.localeCompare(b.orderNo))
+        // 保存原始数据
+        this.originalOrderList = res.data.sort((a, b) => a.orderNo.localeCompare(b.orderNo))
+        // 应用筛选条件
+        this.applyFilters()
       })
+    },
+    // 应用筛选条件
+    applyFilters() {
+      let filteredOrders = [...this.originalOrderList]
+      
+      // 按日期范围筛选
+      if (this.filterForm.dateRange && this.filterForm.dateRange.length === 2) {
+        const startDate = new Date(this.filterForm.dateRange[0])
+        const endDate = new Date(this.filterForm.dateRange[1])
+        endDate.setHours(23, 59, 59, 999)
+        
+        filteredOrders = filteredOrders.filter(order => {
+          const orderDate = new Date(order.createTime)
+          return orderDate >= startDate && orderDate <= endDate
+        })
+      }
+      
+      // 按状态筛选
+      if (this.filterForm.status !== -1) {
+        filteredOrders = filteredOrders.filter(order => order.status === this.filterForm.status)
+      }
+      
+      // 更新订单列表
+      this.orderList = filteredOrders
+    },
+    // 搜索订单
+    searchOrders() {
+      this.loadOrderList()
+    },
+    // 重置筛选条件
+    resetFilter() {
+      this.filterForm = {
+        dateRange: null,
+        status: -1
+      }
+      this.loadOrderList()
     },
     loadUserList() {
       getUserList().then(res => {

@@ -33,9 +33,16 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="250">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button 
+              size="mini" 
+              :type="scope.row.status === 1 ? 'danger' : 'success'"
+              @click="handleStatusChange(scope.row)"
+            >
+              {{ scope.row.status === 1 ? '禁用' : '启用' }}
+            </el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -163,6 +170,22 @@ export default {
         deleteUser(id).then(() => {
           this.$message.success('删除成功')
           this.loadUserList()
+        })
+      })
+    },
+    // 处理状态变更
+    handleStatusChange(row) {
+      const statusText = row.status === 1 ? '禁用' : '启用'
+      this.$confirm(`确定要${statusText}该用户吗？`, '提示', {
+        type: row.status === 1 ? 'warning' : 'success'
+      }).then(() => {
+        const updatedUser = { ...row, status: row.status === 1 ? 0 : 1 }
+        saveUser(updatedUser).then(() => {
+          this.$message.success(`${statusText}成功`)
+          this.loadUserList()
+        }).catch(error => {
+          console.error(`${statusText}失败:`, error)
+          this.$message.error(error.response?.data?.message || `${statusText}失败，请稍后重试`)
         })
       })
     }

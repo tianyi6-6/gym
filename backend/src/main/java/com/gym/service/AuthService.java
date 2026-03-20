@@ -94,7 +94,7 @@ public class AuthService {
       }
       if (coach.getStatus() == 0) {
         logger.warn("教练登录失败，账号已被禁用: {}", username);
-        return Result.error("账号已被禁用");
+        return Result.error("账户已被冻结，请联系管理员");
       }
       response.setToken("");
       response.setUsername(coach.getUsername());
@@ -129,7 +129,7 @@ public class AuthService {
       }
       if (user.getStatus() == 0) {
         logger.warn("用户登录失败，账号已被禁用: {}", username);
-        return Result.error("账号已被禁用");
+        return Result.error("账户已被冻结，请联系管理员");
       }
       response.setToken("");
       response.setUsername(user.getUsername());

@@ -130,6 +130,14 @@
               <i class="el-icon-s-goods"></i>
               <span>课程中心</span>
             </el-menu-item>
+            <el-menu-item index="/user/orders">
+              <i class="el-icon-s-order"></i>
+              <span>我的订单</span>
+            </el-menu-item>
+            <el-menu-item index="/user/equipment">
+              <i class="el-icon-s-tools"></i>
+              <span>器材预约</span>
+            </el-menu-item>
             <el-menu-item index="/user/appointment">
               <i class="el-icon-date"></i>
               <span>我的预约</span>

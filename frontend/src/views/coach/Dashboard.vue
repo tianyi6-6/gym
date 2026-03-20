@@ -206,12 +206,27 @@
         </el-card>
       </el-col>
     </el-row>
+    
+    <el-card style="margin-top: 20px">
+      <div slot="header">系统公告</div>
+      <el-table :data="noticeList" border>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column prop="type" label="类型" width="100">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.type === 2 ? 'danger' : 'info'">
+              {{ scope.row.type === 2 ? '重要' : '普通' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="发布时间" width="180"></el-table-column>
+      </el-table>
+    </el-card>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { getCoachStats } from '@/api'
+import { getCoachStats, getNoticeList } from '@/api'
 import LineChart from '@/components/LineChart.vue'
 import BarChart from '@/components/BarChart.vue'
 import PieChart from '@/components/PieChart.vue'
@@ -312,7 +327,8 @@ export default {
           bodyFatRates: [],
           heartRates: []
         }
-      }
+      },
+      noticeList: []
     }
   },
   computed: {
@@ -367,6 +383,7 @@ export default {
   mounted() {
     this.loadStats()
     this.loadData()
+    this.loadNoticeList()
     this.startAutoRefresh()
   },
   beforeDestroy() {
@@ -595,6 +612,12 @@ export default {
         });
     },
     
+    loadNoticeList() {
+      getNoticeList().then(res => {
+        this.noticeList = res.data.filter(n => n.status === 1).slice(0, 5)
+      })
+    },
+    
     generateDateLabels(days) {
       const labels = []
       const today = new Date()
@@ -707,6 +730,7 @@ export default {
       this.loadCourseTypeData()
       this.loadMonthlyStats()
       this.loadHealthFitness()
+      this.loadNoticeList()
     },
     
     startAutoRefresh() {

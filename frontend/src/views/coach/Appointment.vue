@@ -84,7 +84,7 @@
         <el-table-column label="操作" width="200" fixed="right">
           <template slot-scope="scope">
             <el-button size="small" type="primary" @click="handleView(scope.row)" v-if="scope.row.status === 0">查看</el-button>
-            <el-button size="small" type="success" @click="handleConfirm(scope.row)" v-if="scope.row.status === 0">确认</el-button>
+            <el-button size="small" type="success" @click="handlePass(scope.row)" v-if="scope.row.status === 0">通过</el-button>
             <el-button size="small" type="danger" @click="handleReject(scope.row)" v-if="scope.row.status === 0">拒绝</el-button>
             <el-button size="small" type="info" @click="handleView(scope.row)" v-else>查看</el-button>
             <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-if="scope.row.status !== 3">删除</el-button>
@@ -292,18 +292,44 @@ export default {
       this.currentAppointment = { ...appointment }
       this.viewDialogVisible = true
     },
-    handleConfirm(appointment) {
-      this.$confirm('确定要确认此预约吗？', '提示', {
+    handlePass(appointment) {
+      this.$confirm('确定要通过此预约吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'success'
       }).then(() => {
-        // 模拟确认操作
-        this.$message.success('预约确认成功')
+        // 模拟通过操作
+        // 1. 更新预约状态
+        appointment.status = 1 // 已预约
+        
+        // 2. 生成排班日程
+        this.generateSchedule(appointment)
+        
+        this.$message.success('预约通过成功')
         this.loadAppointments()
       }).catch(() => {
-        // 取消确认
+        // 取消通过
       })
+    },
+    
+    // 生成排班日程
+    generateSchedule(appointment) {
+      // 模拟生成排班日程
+      // 实际项目中应该调用API保存排班日程
+      const schedule = {
+        id: Date.now(),
+        coachId: appointment.coachId,
+        userId: appointment.userId,
+        userName: appointment.userName,
+        startTime: appointment.appointmentTime,
+        endTime: new Date(appointment.appointmentTime.getTime() + appointment.duration * 60 * 1000),
+        status: '已预约',
+        createTime: new Date()
+      }
+      
+      // 这里应该将schedule保存到后端
+      console.log('生成排班日程:', schedule)
+      this.$message.success('排班日程生成成功')
     },
     handleReject(appointment) {
       this.currentAppointment = { ...appointment }
@@ -356,7 +382,7 @@ export default {
     getStatusText(status) {
       const statusMap = {
         0: '待处理',
-        1: '已确认',
+        1: '已预约',
         2: '已拒绝',
         3: '已完成',
         4: '已取消'

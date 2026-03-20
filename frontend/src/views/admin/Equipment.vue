@@ -12,16 +12,17 @@
         <el-table-column prop="type" label="类型"></el-table-column>
         <el-table-column prop="totalCount" label="总数" width="100"></el-table-column>
         <el-table-column prop="availableCount" label="可用数" width="100"></el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="status" label="状态" width="120">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '正常' : '禁用' }}
+            <el-tag :type="getStatusType(scope.row.status)">
+              {{ getStatusText(scope.row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="250">
           <template slot-scope="scope">
             <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="mini" type="primary" @click="handleStatusChange(scope.row)">状态修改</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -47,10 +48,12 @@
           <el-input type="textarea" v-model="equipmentForm.description" :rows="4"></el-input>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="equipmentForm.status">
-            <el-radio :label="1">正常</el-radio>
-            <el-radio :label="0">禁用</el-radio>
-          </el-radio-group>
+          <el-select v-model="equipmentForm.status" placeholder="请选择状态" style="width: 100%">
+            <el-option label="正常空闲" :value="1"></el-option>
+            <el-option label="维修保养中" :value="2"></el-option>
+            <el-option label="使用中" :value="3"></el-option>
+            <el-option label="禁用" :value="0"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer">
@@ -132,6 +135,32 @@ export default {
           this.loadEquipmentList()
         })
       })
+    },
+    // 处理状态修改
+    handleStatusChange(row) {
+      this.dialogTitle = '修改器材状态'
+      this.equipmentForm = { ...row }
+      this.dialogVisible = true
+    },
+    // 获取状态文本
+    getStatusText(status) {
+      const statusMap = {
+        0: '禁用',
+        1: '正常空闲',
+        2: '维修保养中',
+        3: '使用中'
+      }
+      return statusMap[status] || '未知'
+    },
+    // 获取状态类型
+    getStatusType(status) {
+      const typeMap = {
+        0: 'danger',
+        1: 'success',
+        2: 'warning',
+        3: 'info'
+      }
+      return typeMap[status] || 'info'
     }
   }
 }

@@ -46,7 +46,10 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="内容" prop="content">
-          <el-input type="textarea" v-model="noticeForm.content" :rows="10"></el-input>
+          <div class="editor-container">
+            <el-input type="textarea" v-model="noticeForm.content" :rows="10" placeholder="请输入公告内容，支持HTML格式"></el-input>
+            <div class="editor-tips">提示：可输入HTML标签来添加图片和格式化内容</div>
+          </div>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="noticeForm.status">
@@ -57,7 +60,7 @@
       </el-form>
       <div slot="footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSave">保存</el-button>
+        <el-button type="primary" @click="handleSave">发布</el-button>
       </div>
     </el-dialog>
   </div>
@@ -144,6 +147,17 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.editor-container {
+  position: relative;
+}
+
+.editor-tips {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
 }
 </style>
 
